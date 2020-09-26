@@ -26,9 +26,7 @@ gulp.task(`css`, function () {
   return gulp.src(`source/sass/style.scss`)
     .pipe(plumber())
     .pipe(sourcemap.init())
-    .pipe(sass({
-      includePaths: require(`node-normalize-scss`).includePaths
-    }))
+    .pipe(sass())
     .pipe(postcss([autoprefixer({
       grid: true, overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
     })]))
