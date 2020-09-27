@@ -1,4 +1,4 @@
-const gulp = require(`gulp`);
+const { src, dest, parallel, series, watch } = require(`gulp`);
 const plumber = require(`gulp-plumber`);
 const sourcemap = require(`gulp-sourcemaps`);
 const sass = require(`gulp-sass`);
@@ -16,30 +16,7 @@ const del = require(`del`);
 const webpack = require(`webpack-stream`);
 const webpackConfig = require(`./webpack.config.js`);
 
-gulp.task(`js`, function () {
-  return gulp.src([`source/js/main.js`])
-    .pipe(webpack(webpackConfig))
-    .pipe(gulp.dest(`build/js`));
-});
-
-gulp.task(`css`, function () {
-  return gulp.src(`source/sass/style.scss`)
-    .pipe(plumber())
-    .pipe(sourcemap.init())
-    .pipe(sass())
-    .pipe(postcss([autoprefixer({
-      grid: true, overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
-    })]))
-    .pipe(gulp.dest(`build/css`))
-    .pipe(csso())
-    .pipe(rename(`style.min.css`))
-    .pipe(sourcemap.write(`.`))
-    .pipe(gulp.dest(`build/css`))
-    .pipe(server.stream());
-});
-
-
-gulp.task(`server`, function () {
+function openserver() {
   server.init({
     server: `build/`,
     notify: false,
@@ -47,20 +24,32 @@ gulp.task(`server`, function () {
     cors: true,
     ui: false
   });
+};
 
-  gulp.watch(`source/sass/**/*.{scss,sass}`, gulp.series(`css`));
-  gulp.watch(`source/img/icon-*.svg`, gulp.series(`sprite`, `html`, `refresh`));
-  gulp.watch(`source/*.html`, gulp.series(`html`, `refresh`));
-  gulp.watch(`source/js/**/*.js`, gulp.series(`js`, `refresh`));
-});
+function js() {
+  return src([`source/js/main.js`])
+    .pipe(webpack(webpackConfig))
+    .pipe(dest(`build/js`));
+};
 
-gulp.task(`refresh`, function (done) {
-  server.reload();
-  done();
-});
+function css() {
+  return src(`source/sass/style.scss`)
+    .pipe(plumber())
+    .pipe(sourcemap.init())
+    .pipe(sass())
+    .pipe(postcss([autoprefixer({
+      grid: true, overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
+    })]))
+    .pipe(dest(`build/css`))
+    .pipe(csso())
+    .pipe(rename(`style.min.css`))
+    .pipe(sourcemap.write(`.`))
+    .pipe(dest(`build/css`))
+    .pipe(server.stream());
+};
 
-gulp.task(`images`, function () {
-  return gulp.src(`source/img/**/*.{png,jpg,svg}`)
+function images() {
+  return src(`source/img/**/*.{png,jpg,svg}`)
     .pipe(imagemin([
       imagemin.optipng({
         optimizationLevel: 3
@@ -77,54 +66,70 @@ gulp.task(`images`, function () {
       })
     ]))
 
-    .pipe(gulp.dest(`source/img`));
+    .pipe(dest(`source/img`));
+};
 
-});
+function clean() {
+  return del(`build`);
+};
 
-gulp.task(`webp`, function () {
-  return gulp.src(`source/img/**/*.{png,jpg}`)
+
+
+function refresh(done) {
+  server.reload();
+  done();
+};
+
+
+
+function webpic() {
+  return src(`source/img/**/*.{png,jpg}`)
     .pipe(webp({
       quality: 90
     }))
-    .pipe(gulp.dest(`source/img`));
-});
+    .pipe(dest(`source/img`));
+};
 
-gulp.task(`sprite`, function () {
-  return gulp.src(`source/img/svg/{icon-*}.svg`)
+function sprite() {
+  return src(`source/img/sprite/*.svg`)
     .pipe(svgstore({
       inlineSvg: true
     }))
     .pipe(rename(`sprite_auto.svg`))
-    .pipe(gulp.dest(`build/img/svg`));
-});
+    .pipe(dest(`build/img`));
+};
 
-gulp.task(`html`, function () {
-  return gulp.src(`source/*.html`)
+function html() {
+  return src(`source/*.html`)
     .pipe(posthtml([
       include()
     ]))
-    .pipe(gulp.dest(`build`));
-});
+    .pipe(dest(`build`));
+};
 
-gulp.task(`copy`, function () {
-  return gulp.src([
+function copy() {
+  return src([
       `source/fonts/**/*.{woff,woff2}`,
       `source/img/**`,
       `source//*.ico`
     ], {
       base: `source`
     })
-    .pipe(gulp.dest(`build`));
-});
+    .pipe(dest(`build`));
+};
 
-gulp.task(`clean`, function () {
-  return del(`build`);
-});
+function startwatch() {
+  watch(`source/sass/**/*.{scss,sass}`, css);
+  watch(`source/img/**/*.svg`, series(sprite, html, refresh));
+  watch(`source/*.html`, series(html, refresh));
+  watch(`source/js/**/*.js`, series(js, refresh));
+};
 
 
-gulp.task(
-  `build`,
-  gulp.series(`clean`, `copy`, `css`, `sprite`, `js`, `html`)
-);
+exports.openserver = openserver;
+exports.images = images;
+exports.webpic = webpic;
+exports.clean = clean;
 
-gulp.task(`start`, gulp.series(`build`, `server`));
+exports.build = series(clean, copy, css, sprite, js, html);
+exports.start = series([clean, copy, css, sprite, js, html], parallel(startwatch, openserver, refresh));
