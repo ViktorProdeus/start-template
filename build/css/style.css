@@ -480,3 +480,15 @@ a {
 
 .container {
   margin: 0 auto; }
+
+.main-header {
+  background-color: skyblue;
+  padding-left: 50px; }
+
+.main-content {
+  padding: 50px;
+  width: 100%;
+  background-color: pink; }
+
+.main-footer {
+  background-color: skyblue; }

@@ -3,21 +3,21 @@
   "version": "1.0.0",
   "description": "Стартовый шаблон",
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/preset-env": "^7.10.2",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
     "@htmlacademy/editorconfig-cli": "1.x",
-    "autoprefixer": "^9.8.0",
+    "autoprefixer": "^10.0.1",
     "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.7.0",
     "browser-sync": "2.26.x",
-    "eslint": "7.1.0",
-    "eslint-config-htmlacademy": "0.5.x",
+    "eslint": "7.10.0",
+    "eslint-config-htmlacademy": "0.6.x",
     "gulp": "4.0.x",
     "gulp-csso": "^4.0.1",
     "gulp-imagemin": "^7.1.0",
     "gulp-plumber": "1.2.x",
-    "gulp-postcss": "^8.0.0",
-    "gulp-posthtml": "^3.0.4",
+    "gulp-postcss": "^9.0.0",
+    "gulp-posthtml": "^3.0.5",
     "gulp-rename": "^2.0.0",
     "gulp-sass": "4.1.x",
     "gulp-sourcemaps": "2.6.x",
@@ -25,9 +25,9 @@
     "gulp-webp": "^4.0.1",
     "pixel-glass": "^1.0.13",
     "posthtml-include": "^1.4.3",
-    "stylelint": "13.5.x",
+    "stylelint": "13.7.x",
     "stylelint-config-htmlacademy": "0.1.x",
-    "webpack-stream": "^5.2.1"
+    "webpack-stream": "^6.1.0"
   },
   "scripts": {
     "editorconfig": "editorconfig-cli",
@@ -55,6 +55,6 @@
     "node": "8.15"
   },
   "dependencies": {
-    "del": "^5.1.0"
+    "del": "^6.0.0"
   }
 }
