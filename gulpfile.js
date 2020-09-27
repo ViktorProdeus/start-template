@@ -1,4 +1,10 @@
-const { src, dest, parallel, series, watch } = require(`gulp`);
+const {
+  src,
+  dest,
+  parallel,
+  series,
+  watch
+} = require(`gulp`);
 const plumber = require(`gulp-plumber`);
 const sourcemap = require(`gulp-sourcemaps`);
 const sass = require(`gulp-sass`);
@@ -38,7 +44,8 @@ function css() {
     .pipe(sourcemap.init())
     .pipe(sass())
     .pipe(postcss([autoprefixer({
-      grid: true, overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
+      grid: true,
+      overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
     })]))
     .pipe(dest(`build/css`))
     .pipe(csso())
@@ -55,13 +62,19 @@ function images() {
         optimizationLevel: 3
       }),
       imagemin.mozjpeg({
-        quality: 75, progressive: true
+        quality: 75,
+        progressive: true
       }),
       imagemin.svgo({
-        plugins: [
-          {removeViewBox: false},
-          {removeRasterImages: true},
-          {removeUselessStrokeAndFill: false},
+        plugins: [{
+            removeViewBox: false
+          },
+          {
+            removeRasterImages: true
+          },
+          {
+            removeUselessStrokeAndFill: false
+          },
         ]
       })
     ]))
