@@ -1,10 +1,4 @@
-const {
-  src,
-  dest,
-  parallel,
-  series,
-  watch
-} = require(`gulp`);
+const {src, dest, parallel, series, watch} = require(`gulp`);
 const plumber = require(`gulp-plumber`);
 const sourcemap = require(`gulp-sourcemaps`);
 const sass = require(`gulp-sass`);
@@ -44,8 +38,7 @@ function css() {
     .pipe(sourcemap.init())
     .pipe(sass())
     .pipe(postcss([autoprefixer({
-      grid: true,
-      overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
+      grid: true, overrideBrowserslist: [`Ie >= 11, IOS >= 12, > 0.2%, Safari >= 10`]
     })]))
     .pipe(dest(`build/css`))
     .pipe(csso())
@@ -86,14 +79,10 @@ function clean() {
   return del(`build`);
 };
 
-
-
 function refresh(done) {
   server.reload();
   done();
 };
-
-
 
 function webpic() {
   return src(`source/img/**/*.{png,jpg}`)
@@ -138,11 +127,12 @@ function startwatch() {
   watch(`source/js/**/*.js`, series(js, refresh));
 };
 
+const build = series(clean, copy, css, sprite, js, html);
 
 exports.openserver = openserver;
 exports.images = images;
 exports.webpic = webpic;
 exports.clean = clean;
 
-exports.build = series(clean, copy, css, sprite, js, html);
-exports.start = series([clean, copy, css, sprite, js, html], parallel(startwatch, openserver, refresh));
+exports.build = build;
+exports.start = series(build, parallel(startwatch, openserver));
